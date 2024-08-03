@@ -1,0 +1,46 @@
+<div class="p-3">
+  <div class="containerclass">
+    <h1 class="form-title">Registration</h1>
+    <form [formGroup]="portfolioForm" (ngSubmit)="onSubmit()">
+      <div class="main-user-info">
+
+        <div class="user-input-box">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" formControlName="firstName" required/>
+          <div *ngIf="portfolioForm.get('firstName')?.invalid && portfolioForm.get('firstName')?.touched">
+            First Name is required.
+          </div>
+        </div>
+
+        <div class="user-input-box">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" formControlName="lastName" required/>
+          <div *ngIf="portfolioForm.get('lastName')?.invalid && portfolioForm.get('lastName')?.touched">
+            Last Name is required.
+          </div>
+        </div>
+
+
+        <div class="user-input-box">
+          <label for="photoWithoutBackground">Photo Without Background:</label>
+          <input type="file" id="photoWithoutBackground" (change)="onFileChange($event, 'photoWithoutBackground')" required>
+          <div *ngIf="portfolioForm.get('photoWithoutBackground')?.invalid && portfolioForm.get('photoWithoutBackground')?.touched">
+            Photo Without Background is required.
+          </div>
+        </div>
+
+        <div class="user-input-box">
+          <label for="photo">Photo :</label>
+          <input type="file" id="photo" (change)="onFileChange($event, 'photo')" required>
+          <div *ngIf="portfolioForm.get('photo')?.invalid && portfolioForm.get('photo')?.touched">
+            Photo is required.
+          </div>
+        </div>
+
+      </div>
+
+      <div class="form-submit-btn">
+        <button type="submit" [disabled]="portfolioForm.invalid">Generate Portfolio</button>
+      </div>
+    </form>
+  </div>
