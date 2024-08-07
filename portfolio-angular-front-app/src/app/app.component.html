@@ -1,31 +1,64 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">Navbar</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+<!-- Navbar Start -->
+<nav class="navbar navbar-expand-lg" id="navbar">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/homePage" id="logo"><span>P</span>ortfolio</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
+      <span><i class="fa-solid fa-bars"></i></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mynavbar">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link active" routerLink="/homePage">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/portfoliotest">Generate Yours</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/about">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#gallary">Gallary</a>
+        </li>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Home</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/portfolioForm">PotfolioForm</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">about</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Explore</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Contact</a>
-      </li>
 
-    </ul>
-
+      </ul>
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Profil</a>
+        </li>
+      </ul>
+    </div>
   </div>
 </nav>
-<router-outlet>
+<!-- Navbar End -->
+<router-outlet></router-outlet>
 
-</router-outlet>
+
+
+<!-- Footer Start -->
+<footer id="footer">
+  <div class="container">
+    <h1><span>P</span>ortfolio</h1>
+    <p>Créez votre propre portfolio professionnel en quelques clics.</p>
+    <div class="social-links my-3">
+      <a href="#" class="text-white mx-2"><i class="bi bi-facebook"></i></a>
+      <a href="#" class="text-white mx-2"><i class="bi bi-instagram"></i></a>
+      <a href="#" class="text-white mx-2"><i class="bi bi-twitter"></i></a>
+      <a href="#" class="text-white mx-2"><i class="bi bi-youtube"></i></a>
+      <a href="#" class="text-white mx-2"><i class="bi bi-linkedin"></i></a>
+    </div>
+    <div class="credit my-2">
+      <p>Designed by <a href="https://github.com/OuyoussMeryem?tab=repositories" class="text-warning text-decoration-none">Ouyouss Meryem</a></p>
+    </div>
+    <div class="copyright">
+      <p>&copy; 2024 Ouyouss Meryem. Tous droits réservés.</p>
+    </div>
+  </div>
+</footer>
+<!-- Footer End -->
+
+
+

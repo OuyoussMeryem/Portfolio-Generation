@@ -6,19 +6,28 @@ import { AppComponent } from './app.component';
 import {HttpClientModule} from "@angular/common/http";
 import { PortfolioFormComponent } from './portfolio-form/portfolio-form.component';
 import {ReactiveFormsModule} from "@angular/forms";
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { PortfolioTestComponent } from './portfolio-test/portfolio-test.component';
+import { HomeComponent } from './home/home.component';
+import { AboutComponent } from './about/about.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    PortfolioFormComponent
+    PortfolioFormComponent,
+    PortfolioTestComponent,
+    HomeComponent,
+    AboutComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
-  providers: [],
+  providers: [
+    provideAnimationsAsync()
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

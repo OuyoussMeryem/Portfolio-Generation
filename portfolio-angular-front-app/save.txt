@@ -37,3 +37,198 @@
     </div>
   </div>
 </div>
+**********************************************************************
+
+<div class="stepper">
+  <div class="stepper-header">
+    <div class="step active">Step 1</div>
+    <div class="step">Step 2</div>
+    <div class="step">Step 3</div>
+    <div class="step">Step 4</div>
+    <div class="step">Step 5</div>
+  </div>
+  <form id="stepForm">
+    <div class="step-content active" id="step1">
+      <h2>Home</h2>
+      <label for="firstName">First Name:</label>
+      <input type="text" id="firstName" name="firstName" autocomplete="given-name" required />
+      <label for="lastName">Last Name:</label>
+      <input type="text" id="lastName" name="lastName" autocomplete="family-name" required />
+      <label for="photoWithoutBackground">Photo Without Background:</label>
+      <input type="file" id="photoWithoutBackground" name="photoWithoutBackground" required />
+      <label for="photo">Photo:</label>
+      <input type="file" id="photo" name="photo" required />
+    </div>
+    <div class="step-content" id="step2">
+      <h2>About Me</h2>
+      <label for="descriptionGlobal">Global Description:</label>
+      <textarea id="descriptionGlobal" name="descriptionGlobal" required></textarea>
+      <div class="form-group">
+        <h3>Skills</h3>
+        <div id="skillsContainer"></div>
+        <button type="button" onclick="addSkill()">Add Skill</button>
+      </div>
+    </div>
+    <div class="step-content" id="step3">
+      <h2>Services</h2>
+      <div id="servicesContainer"></div>
+      <button type="button" onclick="addService()">Add Service</button>
+    </div>
+    <div class="step-content" id="step4">
+      <h2>Works</h2>
+      <div id="worksContainer"></div>
+      <button type="button" onclick="addWork()">Add Work</button>
+    </div>
+    <div class="step-content" id="step5">
+      <h2>Contact Me</h2>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" autocomplete="email" required />
+      <label for="telephone">Telephone:</label>
+      <input type="text" id="telephone" name="telephone" required />
+      <label for="facebookLien">Facebook Link:</label>
+      <input type="text" id="facebookLien" name="facebookLien" required />
+      <label for="twitterLien">Twitter Link:</label>
+      <input type="text" id="twitterLien" name="twitterLien" required />
+      <label for="instagramLien">Instagram Link:</label>
+      <input type="text" id="instagramLien" name="instagramLien" required />
+      <label for="linkdnLien">LinkedIn Link:</label>
+      <input type="text" id="linkdnLien" name="linkdnLien" required />
+      <label for="cvPdf">CV PDF:</label>
+      <input type="file" id="cvPdf" name="cvPdf" required />
+    </div>
+    <div class="step-buttons">
+      <button type="button" class="prev-btn" onclick="changeStep(-1)">Back</button>
+      <button type="button" class="next-btn" onclick="changeStep(1)">Next</button>
+      <button type="submit" class="submit-btn">Submit</button>
+    </div>
+  </form>
+</div>
+
+##########################################################################################
+<div class="container">
+  <h1 class="form-title">Generate Portfolio </h1>
+  <form [formGroup]="portfolioForm" (ngSubmit)="onSubmit()" >
+    <div class="main-user-info">
+
+      <div class="user-input-box form-group">
+        <label for="brand">Brand</label>
+        <input class="form-control" type="text" id="brand" formControlName="brand" required/>
+        <small class="text-danger" *ngIf="portfolioForm.get('brand')?.invalid && portfolioForm.get('brand')?.touched">
+          *brand is required.*
+        </small>
+      </div>
+
+      <div class="user-input-box form-group">
+        <label for="firstName">First Name</label>
+        <input class="form-control" type="text" id="firstName" formControlName="firstName" required/>
+        <small class="text-danger" *ngIf="portfolioForm.get('firstName')?.invalid && portfolioForm.get('firstName')?.touched">
+          *First Name is required.*
+        </small>
+      </div>
+
+      <div class="user-input-box form-group">
+        <label for="lastName">Last Name</label>
+        <input class="form-control" type="text" id="lastName" formControlName="lastName" required/>
+        <small class="text-danger" *ngIf="portfolioForm.get('lastName')?.invalid && portfolioForm.get('lastName')?.touched">
+          *Last Name is required.*
+        </small>
+      </div>
+
+      <div class="user-input-box form-group">
+        <label for="country">Country</label>
+        <input class="form-control" type="text" id="country" formControlName="country" required/>
+        <small class="text-danger" *ngIf="portfolioForm.get('country')?.invalid && portfolioForm.get('country')?.touched">
+          *country is required.*
+        </small>
+      </div>
+
+      <div class="user-input-box form-group">
+        <label for="domain">Domain</label>
+        <input class="form-control" type="text" id="domain" formControlName="domain" required/>
+        <small class="text-danger" *ngIf="portfolioForm.get('domain')?.invalid && portfolioForm.get('domain')?.touched">
+          *domain is required.*
+        </small>
+      </div>
+
+      <div class="user-input-box form-group">
+        <label for="email">Email</label>
+        <input class="form-control" type="email" id="email" formControlName="email" required/>
+        <small class="text-danger" *ngIf="portfolioForm.get('email')?.invalid && portfolioForm.get('email')?.touched">
+          *email is required.*
+        </small>
+      </div>
+
+      <div class="user-input-box form-group">
+        <label for="telephone">Telephone</label>
+        <input class="form-control" type="text" id="telephone" formControlName="telephone" required/>
+        <small class="text-danger" *ngIf="portfolioForm.get('telephone')?.invalid && portfolioForm.get('telephone')?.touched">
+          *telephone is required.*
+        </small>
+      </div>
+
+      <div class="user-input-box form-group">
+        <label for="facebookLien">Facebook Lien</label>
+        <input class="form-control" type="text" id="facebookLien" formControlName="facebookLien" required/>
+        <small class="text-danger" *ngIf="portfolioForm.get('facebookLien')?.invalid && portfolioForm.get('facebookLien')?.touched">
+          *facebookLien is required.*
+        </small>
+      </div>
+
+      <div class="user-input-box form-group">
+        <label for="twiterLien">Twiter Lien</label>
+        <input class="form-control" type="text" id="twiterLien" formControlName="twiterLien" required/>
+        <small class="text-danger" *ngIf="portfolioForm.get('twiterLien')?.invalid && portfolioForm.get('twiterLien')?.touched">
+          *twiterLien is required.*
+        </small>
+      </div>
+
+      <div class="user-input-box form-group">
+        <label for="linkdnLien">Linkdn Lien</label>
+        <input class="form-control" type="text" id="linkdnLien" formControlName="linkdnLien" required/>
+        <small class="text-danger" *ngIf="portfolioForm.get('linkdnLien')?.invalid && portfolioForm.get('linkdnLien')?.touched">
+          *linkdnLien is required.*
+        </small>
+      </div>
+      <div class="user-input-box form-group">
+        <label for="instagramLien">Instagram Lien</label>
+        <input class="form-control" type="text" id="instagramLien" formControlName="instagramLien" required/>
+        <small class="text-danger" *ngIf="portfolioForm.get('instagramLien')?.invalid && portfolioForm.get('instagramLien')?.touched">
+          *instagramLien is required.*
+        </small>
+      </div>
+      <div class="user-input-box form-group">
+        <label for="descriptionGlobal">Description Global</label>
+        <input class="form-control" type="text" id="descriptionGlobal" formControlName="descriptionGlobal" required/>
+        <small class="text-danger" *ngIf="portfolioForm.get('descriptionGlobal')?.invalid && portfolioForm.get('descriptionGlobal')?.touched">
+          *Description Global is required.*
+        </small>
+      </div>
+      <div class="user-input-box form-group">
+        <label for="backgroundColor">Background Color</label>
+        <input class="form-control" type="color" id="backgroundColor" formControlName="backgroundColor" required/>
+        <small class="text-danger" *ngIf="portfolioForm.get('backgroundColor')?.invalid && portfolioForm.get('backgroundColor')?.touched">
+          *Background Color is required.*
+        </small>
+      </div>
+      <div class="user-input-box form-group">
+        <label for="textColor">Text Color</label>
+        <input class="form-control" type="color" id="textColor" formControlName="textColor" required/>
+        <small class="text-danger" *ngIf="portfolioForm.get('textColor')?.invalid && portfolioForm.get('textColor')?.touched">
+          *Text Color is required.*
+        </small>
+      </div>
+      <div class="user-input-box form-group">
+        <label for="decorationColor">Decoration Color</label>
+        <input class="form-control" type="color" id="decorationColor" formControlName="decorationColor" required/>
+        <small class="text-danger" *ngIf="portfolioForm.get('decorationColor')?.invalid && portfolioForm.get('decorationColor')?.touched">
+          *Decoration Color is required.*
+        </small>
+      </div>
+    </div>
+    <br/><div class="form-submit-btn form-group">
+      <input class="form-control bg-success" type="submit" value="Generate Portfolio">
+    </div>
+  </form>
+  </div>
+
+

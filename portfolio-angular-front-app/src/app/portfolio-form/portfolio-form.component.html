@@ -1,46 +1,168 @@
-<div class="p-3">
-  <div class="containerclass">
-    <h1 class="form-title">Registration</h1>
-    <form [formGroup]="portfolioForm" (ngSubmit)="onSubmit()">
-      <div class="main-user-info">
-
-        <div class="user-input-box">
-          <label for="firstName">First Name</label>
-          <input type="text" id="firstName" formControlName="firstName" required/>
-          <div *ngIf="portfolioForm.get('firstName')?.invalid && portfolioForm.get('firstName')?.touched">
-            First Name is required.
-          </div>
-        </div>
-
-        <div class="user-input-box">
-          <label for="lastName">Last Name</label>
-          <input type="text" id="lastName" formControlName="lastName" required/>
-          <div *ngIf="portfolioForm.get('lastName')?.invalid && portfolioForm.get('lastName')?.touched">
-            Last Name is required.
-          </div>
-        </div>
-
-
-        <div class="user-input-box">
-          <label for="photoWithoutBackground">Photo Without Background:</label>
-          <input type="file" id="photoWithoutBackground" (change)="onFileChange($event, 'photoWithoutBackground')" required>
-          <div *ngIf="portfolioForm.get('photoWithoutBackground')?.invalid && portfolioForm.get('photoWithoutBackground')?.touched">
-            Photo Without Background is required.
-          </div>
-        </div>
-
-        <div class="user-input-box">
-          <label for="photo">Photo :</label>
-          <input type="file" id="photo" (change)="onFileChange($event, 'photo')" required>
-          <div *ngIf="portfolioForm.get('photo')?.invalid && portfolioForm.get('photo')?.touched">
-            Photo is required.
-          </div>
-        </div>
-
-      </div>
-
-      <div class="form-submit-btn">
-        <button type="submit" [disabled]="portfolioForm.invalid">Generate Portfolio</button>
-      </div>
-    </form>
+<form [formGroup]="portfolioForm">
+  <div>
+    <label for="brand">Brand:</label>
+    <input id="brand" formControlName="brand" />
   </div>
+  <div>
+    <label for="firstName">First Name:</label>
+    <input id="firstName" formControlName="firstName" />
+  </div>
+  <div>
+    <label for="lastName">Last Name:</label>
+    <input id="lastName" formControlName="lastName" />
+  </div>
+  <div>
+    <label for="country">Country:</label>
+    <input id="country" formControlName="country" />
+  </div>
+  <div>
+    <label for="domain">Domain:</label>
+    <input id="domain" formControlName="domain" />
+  </div>
+  <div>
+    <label for="email">Email:</label>
+    <input id="email" formControlName="email" />
+  </div>
+  <div>
+    <label for="telephone">Telephone:</label>
+    <input id="telephone" formControlName="telephone" />
+  </div>
+  <div>
+    <label for="facebookLien">Facebook Link:</label>
+    <input id="facebookLien" formControlName="facebookLien" />
+  </div>
+  <div>
+    <label for="twiterLien">Twitter Link:</label>
+    <input id="twiterLien" formControlName="twiterLien" />
+  </div>
+  <div>
+    <label for="linkdnLien">LinkedIn Link:</label>
+    <input id="linkdnLien" formControlName="linkdnLien" />
+  </div>
+  <div>
+    <label for="instagramLien">Instagram Link:</label>
+    <input id="instagramLien" formControlName="instagramLien" />
+  </div>
+  <div>
+    <label for="descriptionGlobal">Global Description:</label>
+    <textarea id="descriptionGlobal" formControlName="descriptionGlobal"></textarea>
+  </div>
+  <div>
+    <label for="backgroundColor">Background Color:</label>
+    <input id="backgroundColor" formControlName="backgroundColor" type="color" />
+  </div>
+  <div>
+    <label for="textColor">Text Color:</label>
+    <input id="textColor" formControlName="textColor" type="color" />
+  </div>
+  <div>
+    <label for="decorationColor">Decoration Color:</label>
+    <input id="decorationColor" formControlName="decorationColor" type="color" />
+  </div>
+  <div>
+    <label for="photoWithoutBackground">Photo Without Background:</label>
+    <input id="photoWithoutBackground" formControlName="photoWithoutBackground" type="file" (change)="onFileChange($event, 'photoWithoutBackground')" />
+  </div>
+  <div>
+    <label for="photo">Photo:</label>
+    <input id="photo" formControlName="photo" type="file" (change)="onFileChange($event, 'photo')" />
+  </div>
+  <div>
+    <label for="cvPdf">CV PDF:</label>
+    <input id="cvPdf" formControlName="cvPdf" type="file" (change)="onFileChange($event, 'cvPdf')" />
+  </div>
+
+  <!-- Skills -->
+  <div formArrayName="portfolioRequest">
+    <div formGroupName="skills">
+      <label>Skills:</label>
+      <div *ngFor="let skill of skills.controls; let i = index">
+        <div [formGroupName]="i">
+          <label for="skillTitle">Title:</label>
+          <input id="skillTitle" formControlName="title" />
+          <label for="skillDescription">Description:</label>
+          <input id="skillDescription" formControlName="description" />
+        </div>
+      </div>
+      <button type="button" (click)="addSkill()">Add Skill</button>
+    </div>
+  </div>
+
+  <!-- Experiences -->
+  <div formArrayName="portfolioRequest">
+    <div formGroupName="experiences">
+      <label>Experiences:</label>
+      <div *ngFor="let experience of experiences.controls; let i = index">
+        <div [formGroupName]="i">
+          <label for="experienceDateDebut">Start Date:</label>
+          <input id="experienceDateDebut" formControlName="dateDebut" />
+          <label for="experienceDateFin">End Date:</label>
+          <input id="experienceDateFin" formControlName="dateFin" />
+          <label for="experienceDescription">Description:</label>
+          <input id="experienceDescription" formControlName="description" />
+        </div>
+      </div>
+      <button type="button" (click)="addExperience()">Add Experience</button>
+    </div>
+  </div>
+
+  <!-- Educations -->
+  <div formArrayName="portfolioRequest">
+    <div formGroupName="educations">
+      <label>Educations:</label>
+      <div *ngFor="let education of educations.controls; let i = index">
+        <div [formGroupName]="i">
+          <label for="educationYear">Year:</label>
+          <input id="educationYear" formControlName="educationYear" />
+          <label for="educationDescription">Description:</label>
+          <input id="educationDescription" formControlName="description" />
+        </div>
+      </div>
+      <button type="button" (click)="addEducation()">Add Education</button>
+    </div>
+  </div>
+
+  <!-- Services -->
+  <div formArrayName="portfolioRequest">
+    <div formGroupName="services">
+      <label>Services:</label>
+      <div *ngFor="let service of services.controls; let i = index">
+        <div [formGroupName]="i">
+          <label for="serviceTitle">Title:</label>
+          <input id="serviceTitle" formControlName="title" />
+          <label for="serviceDescription">Description:</label>
+          <input id="serviceDescription" formControlName="description" />
+        </div>
+      </div>
+      <button type="button" (click)="addService()">Add Service</button>
+    </div>
+  </div>
+
+  <!-- Works -->
+  <div formArrayName="portfolioRequest">
+    <div formGroupName="works">
+      <label>Works:</label>
+      <div *ngFor="let work of works.controls; let i = index">
+        <div [formGroupName]="i">
+          <label for="workTitle">Title:</label>
+          <input id="workTitle" formControlName="title" />
+          <label for="workDescription">Description:</label>
+          <input id="workDescription" formControlName="description" />
+          <label for="workLink">Link:</label>
+          <input id="workLink" formControlName="link" />
+          <label for="workImage">Image:</label>
+          <input id="workImage" type="file" (change)="onFileChange($event, 'workImage')" />
+        </div>
+      </div>
+      <button type="button" (click)="addWork()">Add Work</button>
+    </div>
+  </div>
+
+  <!-- Work Images -->
+  <div>
+    <label for="workImages">Work Images:</label>
+    <input id="workImages" type="file" (change)="addWorkImage($event)" multiple />
+  </div>
+
+  <button type="submit" (click)="onSubmit()">Generate Portfolio</button>
+</form>

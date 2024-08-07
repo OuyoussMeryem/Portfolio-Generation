@@ -1,21 +1,817 @@
-<div id="header">
-    <div class="container">
-        <nav>
-            <img src="images/logo.png" class="logo">
-            <ul id="sidemenu">
-                <li><a href="#header" id="">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#portfolio">Portfolio</a></li>
-                <li><a href="#contact">Contact</a></li>
-                <i class="fas fa-times" onclick="closemenu()"></i>
-            </ul>
-            <i class="fas fa-bars" onclick="openmenu()"></i>
-        </nav>
+package ma.ensa.portfoliobackendapp.controllers;
 
-        <div class="header-text">
-            <p>UI/UX Developper</p>
-            <h1>Hi,I'm <span>#{firstName}</span><br> #{lastName} From Morocco</h1>
-        </div>
-    </div>
-</div>
+
+import ma.ensa.portfoliobackendapp.dtos.EducationDTO;
+import ma.ensa.portfoliobackendapp.dtos.ExperienceDTO;
+import ma.ensa.portfoliobackendapp.dtos.SkillDTO;
+import ma.ensa.portfoliobackendapp.entities.*;
+import ma.ensa.portfoliobackendapp.repositories.PortfolioRepository;
+import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+@RestController
+@RequestMapping("/api/generate")
+@CrossOrigin("*")
+public class CreatePortfolioController {
+
+    @Autowired
+    private ResourceLoader resourceLoader;
+
+    @Autowired
+    private PortfolioRepository portfolioRepository;
+
+    @PostMapping("/htmlCssJsFilesSeparer")
+    public ResponseEntity<byte[]> generatePortfolioSeparer(@RequestParam("brand") String brand,
+                                                           @RequestParam("firstName") String firstName,
+                                                           @RequestParam("lastName") String lastName,
+                                                           @RequestParam("country") String country,
+                                                           @RequestParam("domain") String domain,
+                                                           @RequestParam("email") String email,
+                                                           @RequestParam("telephone") String telephone,
+                                                           @RequestParam("facebookLien") String facebookLien,
+                                                           @RequestParam("twiterLien") String twiterLien,
+                                                           @RequestParam("linkdnLien") String linkdnLien,
+                                                           @RequestParam("instagramLien") String instagramLien,
+                                                           @RequestParam("descriptionGlobal") String descriptionGlobal,
+                                                           @RequestParam("skills") List<SkillDTO> skills,
+                                                           @RequestParam("experiences") List<ExperienceDTO> experiences,
+                                                           @RequestParam("educations") List<EducationDTO> educations,
+                                                           @RequestParam("photoWithoutBackground") MultipartFile photoWithoutBackground,
+                                                           @RequestParam("photo") MultipartFile photo,
+                                                           @RequestParam("cvPdf") MultipartFile cvPdf,
+                                                           @RequestParam("backgroundColor") String backgroundColor,
+                                                           @RequestParam("textColor") String textColor,
+                                                           @RequestParam("decorationColor") String decorationColor) throws IOException {
+
+        // Créer et sauvegarder le portfolio
+        Portfolio portfolio = createPortfolio(brand, firstName, lastName, country, domaine, descriptionGlobal,
+                skills, experiences, educations, backgroundColor, textColor, decorationColor);
+        portfolioRepository.save(portfolio);
+
+        // Charger le contenu des fichiers HTML, CSS et JS depuis les ressources statiques
+        String htmlContent = loadFileContent("static/index.html")
+                                .replace("#{firstName}", firstName)
+                                .replace("#{lastName}", lastName)
+                                .replace("#{brand}", brand)
+                                .replace("#{descriptionGlobal}", descriptionGlobal)
+                                .replace("#{country}", country)
+                                .replace("#{domain}", domain)
+                                .replace("#{email}", email)
+                                .replace("#{telephone}", telephone)
+                                .replace("#{facebookLien}", facebookLien)
+                                .replace("#{twiterLien}", twiterLien)
+                                .replace("#{linkdnLien}", linkdnLien)
+                                .replace("#{instagramLien}", instagramLien);
+
+        // Générer les sections dynamiques pour skills, experiences et educations
+        StringBuilder skillsHtml = new StringBuilder();
+        for (SkillDTO skill : skills) {
+            skillsHtml.append("<li><span>").append(skill.getTitle()).append("</span><br>").append(skill.getDescription()).append("</li>");
+        }
+
+        StringBuilder experiencesHtml = new StringBuilder();
+        for (ExperienceDTO experience : experiences) {
+            experiencesHtml.append("<li><span>").append(experience.getDateDebut()).append(" - ").append(experience.getDateFin()).append("</span><br>").append(experience.getDescription()).append("</li>");
+        }
+
+        StringBuilder educationsHtml = new StringBuilder();
+        for (EducationDTO education : educations) {
+            educationsHtml.append("<li><span>").append(education.getYear()).append("</span><br>").append(education.getDescription()).append("</li>");
+        }
+
+        // Remplacer les placeholders dans le fichier HTML
+        htmlContent = htmlContent
+                .replace("#{skillsList}", skillsHtml.toString())
+                .replace("#{experiencesList}", experiencesHtml.toString())
+                .replace("#{educationsList}", educationsHtml.toString());
+
+        String cssContent = loadFileContent("static/style.css")
+                .replace("background-color: #000;", "background-color: " + backgroundColor + ";")
+                .replace("color: #fff;", "color: " + textColor + ";");
+        String jsContent = loadFileContent("static/script.js");
+
+        // Création d'un répertoire temporaire pour les fichiers
+        File tempDir = Files.createTempDirectory("portfolio").toFile();
+        File htmlFile = new File(tempDir, "index.html");
+        File cssFile = new File(tempDir, "style.css");
+        File jsFile = new File(tempDir, "script.js");
+        File photoWithoutBackgroundFile = new File(tempDir, "photoWithoutBackground.png");
+        File photoFile = new File(tempDir, "photo.jpg");
+        File cvPdfFile = new File(tempDir, "cvPdf.pdf");
+
+        // Écriture des fichiers
+        FileUtils.writeStringToFile(htmlFile, htmlContent, "UTF-8");
+        FileUtils.writeStringToFile(cssFile, cssContent, "UTF-8");
+        FileUtils.writeStringToFile(jsFile, jsContent, "UTF-8");
+        FileCopyUtils.copy(photoWithoutBackground.getBytes(), photoWithoutBackgroundFile);
+        FileCopyUtils.copy(photo.getBytes(), photoFile);
+        FileCopyUtils.copy(cvPdf.getBytes(), cvPdfFile);
+
+        // Utilisation de ByteArrayOutputStream pour gérer les flux en mémoire
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try (ZipOutputStream zipOut = new ZipOutputStream(byteArrayOutputStream)) {
+            addToZipFile(htmlFile, "index.html", zipOut);
+            addToZipFile(cssFile, "style.css", zipOut);
+            addToZipFile(jsFile, "script.js", zipOut);
+            addToZipFile(photoWithoutBackgroundFile, "photoWithoutBackground.png", zipOut);
+            addToZipFile(photoFile, "photo.jpg", zipOut);
+            addToZipFile(cvPdfFile, "cvPdf.pdf", zipOut);
+            zipOut.closeEntry();
+        }
+
+        // Conversion du ByteArrayOutputStream en tableau de bytes
+        byte[] zipBytes = byteArrayOutputStream.toByteArray();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=portfolio.zip");
+
+        return new ResponseEntity<>(zipBytes, headers, HttpStatus.OK);
+    }
+
+    private Portfolio createPortfolio(String brand, String firstName, String lastName, String country, String domaine, String descriptionGlobal,
+                                      List<SkillDTO> skills, List<ExperienceDTO> experiences, List<EducationDTO> educations,
+                                      String backgroundColor, String textColor, String decorationColor) {
+        Portfolio portfolio = new Portfolio();
+        portfolio.setCreatedAt(new Date());
+        portfolio.setBrand(brand);
+        portfolio.setBackgroundColor(backgroundColor);
+        portfolio.setTextColor(textColor);
+        portfolio.setDecorationColor(decorationColor);
+        portfolio.setDescriptionGlobal(descriptionGlobal);
+
+        UserApp user = new UserApp();
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setCountry(country);
+        user.setDomain(domaine);
+        portfolio.setUser(user);
+
+        List<Skill> skillEntities = new ArrayList<>();
+        for (SkillDTO skillDTO : skills) {
+            Skill skill = new Skill();
+            skill.setTitle(skillDTO.getTitle());
+            skill.setDescription(skillDTO.getDescription());
+            skillEntities.add(skill);
+        }
+        portfolio.setSkillList(skillEntities);
+
+        List<Experience> experienceEntities = new ArrayList<>();
+        for (ExperienceDTO experienceDTO : experiences) {
+            Experience experience = new Experience();
+            experience.setDateDebut(experienceDTO.getDateDebut());
+            experience.setDateFin(experienceDTO.getDateFin());
+            experience.setDescription(experienceDTO.getDescription());
+            experienceEntities.add(experience);
+        }
+        portfolio.setExperienceList(experienceEntities);
+
+        List<Education> educationEntities = new ArrayList<>();
+        for (EducationDTO educationDTO : educations) {
+            Education education = new Education();
+            education.setYear(educationDTO.getYear());
+            education.setDescription(educationDTO.getDescription());
+            educationEntities.add(education);
+        }
+        portfolio.setEducationList(educationEntities);
+
+        return portfolio;
+    }
+
+    // Méthode pour charger le contenu d'un fichier en tant que chaîne de caractères
+    private String loadFileContent(String filePath) throws IOException {
+        Resource resource = resourceLoader.getResource("classpath:" + filePath);
+        InputStream inputStream = resource.getInputStream();
+        byte[] bytes = inputStream.readAllBytes();
+        return new String(bytes);
+    }
+    // Méthode pour ajouter un fichier au fichier ZIP
+    private void addToZipFile(File file, String fileName, ZipOutputStream zipOut) throws IOException {
+        zipOut.putNextEntry(new ZipEntry(fileName));
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        zipOut.write(bytes, 0, bytes.length);
+        zipOut.closeEntry();
+    }
+
+}
+
+###################################################################################""
+package ma.ensa.portfoliobackendapp.controllers;
+
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import ma.ensa.portfoliobackendapp.dtos.EducationDTO;
+import ma.ensa.portfoliobackendapp.dtos.ExperienceDTO;
+import ma.ensa.portfoliobackendapp.dtos.ServiceDTO;
+import ma.ensa.portfoliobackendapp.dtos.SkillDTO;
+import ma.ensa.portfoliobackendapp.entities.*;
+import ma.ensa.portfoliobackendapp.repositories.PortfolioRepository;
+import ma.ensa.portfoliobackendapp.requests.PortfolioRequest;
+import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+@RestController
+@RequestMapping("/api/generate")
+@CrossOrigin("*")
+public class CreatePortfolioController {
+
+    @Autowired
+    private ResourceLoader resourceLoader;
+
+    @Autowired
+    private PortfolioRepository portfolioRepository;
+
+    @PostMapping(value = "/portfolio", consumes = "multipart/form-data")
+    public ResponseEntity<byte[]> generatePortfolioSeparer(
+            @RequestParam("brand") String brand,
+            @RequestParam("firstName") String firstName,
+            @RequestParam("lastName") String lastName,
+            @RequestParam("country") String country,
+            @RequestParam("domain") String domain,
+            @RequestParam("email") String email,
+            @RequestParam("telephone") String telephone,
+            @RequestParam("facebookLien") String facebookLien,
+            @RequestParam("twiterLien") String twiterLien,
+            @RequestParam("linkdnLien") String linkdnLien,
+            @RequestParam("instagramLien") String instagramLien,
+            @RequestParam("descriptionGlobal") String descriptionGlobal,
+            @RequestParam("backgroundColor") String backgroundColor,
+            @RequestParam("textColor") String textColor,
+            @RequestParam("decorationColor") String decorationColor,
+            @RequestPart("photoWithoutBackground") MultipartFile photoWithoutBackground,
+            @RequestPart("photo") MultipartFile photo,
+            @RequestPart("cvPdf") MultipartFile cvPdf,
+            @RequestParam("portfolioRequest") String portfolioRequestJson) throws IOException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        PortfolioRequest portfolioRequest = objectMapper.readValue(portfolioRequestJson, PortfolioRequest.class);
+
+        // Créer et sauvegarder le portfolio
+        Portfolio portfolio = createPortfolio(brand, firstName, lastName, country, domain, descriptionGlobal,
+                portfolioRequest.getSkills(), portfolioRequest.getExperiences(), portfolioRequest.getEducations(),
+                portfolioRequest.getServices(),backgroundColor, textColor, decorationColor);
+        portfolioRepository.save(portfolio);
+
+        // Charger le contenu des fichiers HTML, CSS et JS depuis les ressources statiques
+        String htmlContent = loadFileContent("static/index.html")
+                .replace("#{firstName}", firstName)
+                .replace("#{lastName}", lastName)
+                .replace("#{brand}", brand)
+                .replace("#{descriptionGlobal}", descriptionGlobal)
+                .replace("#{country}", country)
+                .replace("#{domain}", domain)
+                .replace("#{email}", email)
+                .replace("#{telephone}", telephone)
+                .replace("#{facebookLien}", facebookLien)
+                .replace("#{twiterLien}", twiterLien)
+                .replace("#{linkdnLien}", linkdnLien)
+                .replace("#{instagramLien}", instagramLien);
+
+        // Générer les sections dynamiques pour skills, experiences et educations
+        StringBuilder skillsHtml = new StringBuilder();
+        for (SkillDTO skill : portfolioRequest.getSkills()) {
+            skillsHtml.append("<li><span>").append(skill.getTitle()).append("</span><br>").append(skill.getDescription()).append("</li>");
+        }
+
+        StringBuilder experiencesHtml = new StringBuilder();
+        for (ExperienceDTO experience : portfolioRequest.getExperiences()) {
+            experiencesHtml.append("<li><span>").append(experience.getDateDebut()).append(" - ")
+                    .append(experience.getDateFin()).append("</span><br>").append(experience.getDescription()).append("</li>");
+        }
+
+        StringBuilder educationsHtml = new StringBuilder();
+        for (EducationDTO education : portfolioRequest.getEducations()) {
+            educationsHtml.append("<li><span>").append(education.getEducationYear()).append("</span><br>")
+                    .append(education.getDescription()).append("</li>");
+        }
+
+        StringBuilder servicesHtml=new StringBuilder();
+        for(ServiceDTO serviceDTO:portfolioRequest.getServices()){
+
+            servicesHtml.append("<div><i class='fa-solid fa-code'></i><h2>").append(serviceDTO.getTitle()) .append("</h2><br>")
+                    .append("<p>").append(serviceDTO.getDescription()).append("</p></div>");
+        }
+
+        // Remplacer les placeholders dans le fichier HTML
+        htmlContent = htmlContent
+                .replace("#{skillsList}", skillsHtml.toString())
+                .replace("#{experiencesList}", experiencesHtml.toString())
+                .replace("#{educationsList}", educationsHtml.toString())
+                .replace("#{servicesList}", servicesHtml.toString());
+
+        String cssContent = loadFileContent("static/style.css")
+                .replace("#{backgroundColor}", backgroundColor)
+                .replace("#{textColor}", textColor)
+                .replace("#{decorationColor}", decorationColor)
+                .replace("#{secondDecorationColor}", getLightenedColor(decorationColor));
+
+        String jsContent = loadFileContent("static/script.js");
+
+        // Création d'un répertoire temporaire pour les fichiers
+        File tempDir = Files.createTempDirectory("portfolio").toFile();
+        File htmlFile = new File(tempDir, "index.html");
+        File cssFile = new File(tempDir, "style.css");
+        File jsFile = new File(tempDir, "script.js");
+        File photoWithoutBackgroundFile = new File(tempDir, "photoWithoutBackground.png");
+        File photoFile = new File(tempDir, "photo.jpg");
+        File cvPdfFile = new File(tempDir, "cvPdf.pdf");
+
+        // Écriture des fichiers
+        FileUtils.writeStringToFile(htmlFile, htmlContent, "UTF-8");
+        FileUtils.writeStringToFile(cssFile, cssContent, "UTF-8");
+        FileUtils.writeStringToFile(jsFile, jsContent, "UTF-8");
+        FileCopyUtils.copy(photoWithoutBackground.getBytes(), photoWithoutBackgroundFile);
+        FileCopyUtils.copy(photo.getBytes(), photoFile);
+        FileCopyUtils.copy(cvPdf.getBytes(), cvPdfFile);
+
+        // Utilisation de ByteArrayOutputStream pour gérer les flux en mémoire
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try (ZipOutputStream zipOut = new ZipOutputStream(byteArrayOutputStream)) {
+            addToZipFile(htmlFile, "index.html", zipOut);
+            addToZipFile(cssFile, "style.css", zipOut);
+            addToZipFile(jsFile, "script.js", zipOut);
+            addToZipFile(photoWithoutBackgroundFile, "photoWithoutBackground.png", zipOut);
+            addToZipFile(photoFile, "photo.jpg", zipOut);
+            addToZipFile(cvPdfFile, "cvPdf.pdf", zipOut);
+            zipOut.closeEntry();
+        }
+
+        // Conversion du ByteArrayOutputStream en tableau de bytes
+        byte[] zipBytes = byteArrayOutputStream.toByteArray();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=portfolio.zip");
+
+        return new ResponseEntity<>(zipBytes, headers, HttpStatus.OK);
+    }
+
+    private Portfolio createPortfolio(String brand, String firstName, String lastName, String country, String domaine, String descriptionGlobal,
+                                      List<SkillDTO> skills, List<ExperienceDTO> experiences, List<EducationDTO> educations,
+                                      List<ServiceDTO> services, String backgroundColor, String textColor, String decorationColor) {
+        Portfolio portfolio = new Portfolio();
+        portfolio.setCreatedAt(new Date());
+        portfolio.setBrand(brand);
+        portfolio.setBackgroundColor(backgroundColor);
+        portfolio.setTextColor(textColor);
+        portfolio.setDecorationColor(decorationColor);
+        portfolio.setDescriptionGlobal(descriptionGlobal);
+
+        UserApp user = new UserApp();
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setCountry(country);
+        user.setDomain(domaine);
+        portfolio.setUser(user);
+
+        List<Skill> skillEntities = new ArrayList<>();
+        for (SkillDTO skillDTO : skills) {
+            Skill skill = new Skill();
+            skill.setTitle(skillDTO.getTitle());
+            skill.setDescription(skillDTO.getDescription());
+            skillEntities.add(skill);
+        }
+        portfolio.setSkillList(skillEntities);
+
+        List<Experience> experienceEntities = new ArrayList<>();
+        for (ExperienceDTO experienceDTO : experiences) {
+            Experience experience = new Experience();
+            experience.setDateDebut(experienceDTO.getDateDebut());
+            experience.setDateFin(experienceDTO.getDateFin());
+            experience.setDescription(experienceDTO.getDescription());
+            experienceEntities.add(experience);
+        }
+        portfolio.setExperienceList(experienceEntities);
+
+        List<Education> educationEntities = new ArrayList<>();
+        for (EducationDTO educationDTO : educations) {
+            Education education = new Education();
+            education.setEducationYear(educationDTO.getEducationYear());
+            education.setDescription(educationDTO.getDescription());
+            educationEntities.add(education);
+        }
+        portfolio.setEducationList(educationEntities);
+
+        List<Service> serviceEntities=new ArrayList<>();
+        for(ServiceDTO serviceDTO:services){
+            Service service=new Service();
+            service.setTitle(serviceDTO.getTitle());
+            service.setDescription(serviceDTO.getDescription());
+            serviceEntities.add(service);
+        }
+        portfolio.setServiceList(serviceEntities);
+
+        return portfolio;
+    }
+
+
+    private String loadFileContent(String filePath) throws IOException {
+        Resource resource = resourceLoader.getResource("classpath:" + filePath);
+        InputStream inputStream = resource.getInputStream();
+        byte[] bytes = inputStream.readAllBytes();
+        return new String(bytes);
+    }
+    // Méthode pour ajouter un fichier au fichier ZIP
+    private void addToZipFile(File file, String fileName, ZipOutputStream zipOut) throws IOException {
+        zipOut.putNextEntry(new ZipEntry(fileName));
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        zipOut.write(bytes, 0, bytes.length);
+        zipOut.closeEntry();
+    }
+
+    private String getLightenedColor(String hexColor) {
+        // Assurez-vous que le code couleur est bien au format hexadécimal (comme #ff004f)
+        if (hexColor == null || hexColor.length() != 7 || !hexColor.startsWith("#")) {
+            return hexColor; // Retourne la couleur d'origine si elle n'est pas valide
+        }
+
+        // Convertir la couleur hexadécimale en RGB
+        int r = Integer.parseInt(hexColor.substring(1, 3), 16);
+        int g = Integer.parseInt(hexColor.substring(3, 5), 16);
+        int b = Integer.parseInt(hexColor.substring(5, 7), 16);
+
+        // Augmenter la luminosité
+        r = Math.min(255, (int) (r * 1.2));
+        g = Math.min(255, (int) (g * 1.2));
+        b = Math.min(255, (int) (b * 1.2));
+
+        // Convertir RGB en couleur hexadécimale
+        return String.format("#%02x%02x%02x", r, g, b);
+    }
+
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handlerException(Exception e){
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##########################################"""
+package ma.ensa.portfoliobackendapp.controllers;
+
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import ma.ensa.portfoliobackendapp.dtos.*;
+import ma.ensa.portfoliobackendapp.entities.*;
+import ma.ensa.portfoliobackendapp.repositories.PortfolioRepository;
+import ma.ensa.portfoliobackendapp.requests.PortfolioRequest;
+import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+@RestController
+@RequestMapping("/api/generate")
+@CrossOrigin("*")
+public class CreatePortfolioController {
+
+    @Autowired
+    private ResourceLoader resourceLoader;
+
+    @Autowired
+    private PortfolioRepository portfolioRepository;
+
+    @PostMapping(value = "/portfolio", consumes = "multipart/form-data")
+    public ResponseEntity<byte[]> generatePortfolioSeparer(
+            @RequestParam("brand") String brand,
+            @RequestParam("firstName") String firstName,
+            @RequestParam("lastName") String lastName,
+            @RequestParam("country") String country,
+            @RequestParam("domain") String domain,
+            @RequestParam("email") String email,
+            @RequestParam("telephone") String telephone,
+            @RequestParam("facebookLien") String facebookLien,
+            @RequestParam("twiterLien") String twiterLien,
+            @RequestParam("linkdnLien") String linkdnLien,
+            @RequestParam("instagramLien") String instagramLien,
+            @RequestParam("descriptionGlobal") String descriptionGlobal,
+            @RequestParam("backgroundColor") String backgroundColor,
+            @RequestParam("textColor") String textColor,
+            @RequestParam("decorationColor") String decorationColor,
+            @RequestPart("photoWithoutBackground") MultipartFile photoWithoutBackground,
+            @RequestPart("photo") MultipartFile photo,
+            @RequestPart("cvPdf") MultipartFile cvPdf,
+            @RequestParam("portfolioRequest") String portfolioRequestJson,
+            @RequestPart("workImages") List<MultipartFile> workImages) throws IOException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        PortfolioRequest portfolioRequest = objectMapper.readValue(portfolioRequestJson, PortfolioRequest.class);
+
+        // Créer et sauvegarder le portfolio
+        Portfolio portfolio = createPortfolio(brand, firstName, lastName, country, domain, descriptionGlobal,
+                portfolioRequest.getSkills(), portfolioRequest.getExperiences(), portfolioRequest.getEducations(),
+                portfolioRequest.getServices(), portfolioRequest.getWorks(),backgroundColor, textColor, decorationColor,workImages);
+        portfolioRepository.save(portfolio);
+
+        // Charger le contenu des fichiers HTML, CSS et JS depuis les ressources statiques
+        String htmlContent = loadFileContent("static/index.html")
+                .replace("#{firstName}", firstName)
+                .replace("#{lastName}", lastName)
+                .replace("#{brand}", brand)
+                .replace("#{descriptionGlobal}", descriptionGlobal)
+                .replace("#{country}", country)
+                .replace("#{domain}", domain)
+                .replace("#{email}", email)
+                .replace("#{telephone}", telephone)
+                .replace("#{facebookLien}", facebookLien)
+                .replace("#{twiterLien}", twiterLien)
+                .replace("#{linkdnLien}", linkdnLien)
+                .replace("#{instagramLien}", instagramLien);
+
+        // Générer les sections dynamiques pour skills, experiences et educations
+        StringBuilder skillsHtml = new StringBuilder();
+        for (SkillDTO skill : portfolioRequest.getSkills()) {
+            skillsHtml.append("<li><span>").append(skill.getTitle()).append("</span><br>").append(skill.getDescription()).append("</li>");
+        }
+
+        StringBuilder experiencesHtml = new StringBuilder();
+        for (ExperienceDTO experience : portfolioRequest.getExperiences()) {
+            experiencesHtml.append("<li><span>").append(experience.getDateDebut()).append(" - ")
+                    .append(experience.getDateFin()).append("</span><br>").append(experience.getDescription()).append("</li>");
+        }
+
+        StringBuilder educationsHtml = new StringBuilder();
+        for (EducationDTO education : portfolioRequest.getEducations()) {
+            educationsHtml.append("<li><span>").append(education.getEducationYear()).append("</span><br>")
+                    .append(education.getDescription()).append("</li>");
+        }
+
+        StringBuilder servicesHtml=new StringBuilder();
+        for(ServiceDTO serviceDTO:portfolioRequest.getServices()){
+
+            servicesHtml.append("<div><i class='fa-solid fa-code'></i><h2>").append(serviceDTO.getTitle()) .append("</h2><br>")
+                    .append("<p>").append(serviceDTO.getDescription()).append("</p></div>");
+        }
+
+        StringBuilder worksHtml = new StringBuilder();
+        int imageIndex = 0;
+        for (WorkDTO workDTO : portfolioRequest.getWorks()) {
+            worksHtml.append("<div class=\"work\">")
+                    .append("<img src=\"workImage").append(imageIndex).append(".jpg\" >")
+                    .append("<div class=\"layer\">")
+                    .append("<h3>").append(workDTO.getTitle()).append("</h3>")
+                    .append("<p>").append(workDTO.getDescription()).append("</p>")
+                    .append("<a href=\"").append(workDTO.getLink()).append("\"><i class=\"fa-solid fa-up-right-from-square\"></i></a>")
+                    .append("</div></div>");
+
+            imageIndex++;
+        }
+
+        // Remplacer les placeholders dans le fichier HTML
+        htmlContent = htmlContent
+                .replace("#{skillsList}", skillsHtml.toString())
+                .replace("#{experiencesList}", experiencesHtml.toString())
+                .replace("#{educationsList}", educationsHtml.toString())
+                .replace("#{servicesList}", servicesHtml.toString())
+                .replace("#{worksList}", worksHtml.toString());
+
+        String cssContent = loadFileContent("static/style.css")
+                .replace("#{backgroundColor}", backgroundColor)
+                .replace("#{textColor}", textColor)
+                .replace("#{decorationColor}", decorationColor)
+                .replace("#{secondDecorationColor}", getDarkenedColor(decorationColor));
+
+        String jsContent = loadFileContent("static/script.js");
+
+        // Création d'un répertoire temporaire pour les fichiers
+        File tempDir = Files.createTempDirectory("portfolio").toFile();
+        File htmlFile = new File(tempDir, "index.html");
+        File cssFile = new File(tempDir, "style.css");
+        File jsFile = new File(tempDir, "script.js");
+        File photoWithoutBackgroundFile = new File(tempDir, "photoWithoutBackground.png");
+        File photoFile = new File(tempDir, "photo.jpg");
+        File cvPdfFile = new File(tempDir, "cvPdf.pdf");
+
+        // Écriture des fichiers
+        FileUtils.writeStringToFile(htmlFile, htmlContent, "UTF-8");
+        FileUtils.writeStringToFile(cssFile, cssContent, "UTF-8");
+        FileUtils.writeStringToFile(jsFile, jsContent, "UTF-8");
+        FileCopyUtils.copy(photoWithoutBackground.getBytes(), photoWithoutBackgroundFile);
+        FileCopyUtils.copy(photo.getBytes(), photoFile);
+        FileCopyUtils.copy(cvPdf.getBytes(), cvPdfFile);
+        // Add work images
+        imageIndex = 0;
+        for (MultipartFile workImage : workImages) {
+            File workImageFile = new File(tempDir, "workImage" + imageIndex + ".jpg");
+            FileCopyUtils.copy(workImage.getBytes(), workImageFile);
+            imageIndex++;
+        }
+
+        // Utilisation de ByteArrayOutputStream pour gérer les flux en mémoire
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try (ZipOutputStream zipOut = new ZipOutputStream(byteArrayOutputStream)) {
+            addToZipFile(htmlFile, "index.html", zipOut);
+            addToZipFile(cssFile, "style.css", zipOut);
+            addToZipFile(jsFile, "script.js", zipOut);
+            addToZipFile(photoWithoutBackgroundFile, "photoWithoutBackground.png", zipOut);
+            addToZipFile(photoFile, "photo.jpg", zipOut);
+            addToZipFile(cvPdfFile, "cvPdf.pdf", zipOut);
+
+            imageIndex = 0;
+            for (MultipartFile workImage : workImages) {
+                addToZipFile(new File(tempDir, "workImage" + imageIndex + ".jpg"), "workImage" + imageIndex + ".jpg", zipOut);
+                imageIndex++;
+            }
+
+            zipOut.closeEntry();
+        }
+
+        // Conversion du ByteArrayOutputStream en tableau de bytes
+        byte[] zipBytes = byteArrayOutputStream.toByteArray();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=portfolio.zip");
+
+        return new ResponseEntity<>(zipBytes, headers, HttpStatus.OK);
+    }
+
+    private Portfolio createPortfolio(String brand, String firstName, String lastName, String country, String domaine, String descriptionGlobal,
+                                      List<SkillDTO> skills, List<ExperienceDTO> experiences, List<EducationDTO> educations,
+                                      List<ServiceDTO> services,List<WorkDTO> works, String backgroundColor, String textColor, String decorationColor,List<MultipartFile> workImages) throws IOException {
+        Portfolio portfolio = new Portfolio();
+        portfolio.setCreatedAt(new Date());
+        portfolio.setBrand(brand);
+        portfolio.setBackgroundColor(backgroundColor);
+        portfolio.setTextColor(textColor);
+        portfolio.setDecorationColor(decorationColor);
+        portfolio.setDescriptionGlobal(descriptionGlobal);
+
+        UserApp user = new UserApp();
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setCountry(country);
+        user.setDomain(domaine);
+        portfolio.setUser(user);
+
+        List<Skill> skillEntities = new ArrayList<>();
+        for (SkillDTO skillDTO : skills) {
+            Skill skill = new Skill();
+            skill.setTitle(skillDTO.getTitle());
+            skill.setDescription(skillDTO.getDescription());
+            skillEntities.add(skill);
+        }
+        portfolio.setSkillList(skillEntities);
+
+        List<Experience> experienceEntities = new ArrayList<>();
+        for (ExperienceDTO experienceDTO : experiences) {
+            Experience experience = new Experience();
+            experience.setDateDebut(experienceDTO.getDateDebut());
+            experience.setDateFin(experienceDTO.getDateFin());
+            experience.setDescription(experienceDTO.getDescription());
+            experienceEntities.add(experience);
+        }
+        portfolio.setExperienceList(experienceEntities);
+
+        List<Education> educationEntities = new ArrayList<>();
+        for (EducationDTO educationDTO : educations) {
+            Education education = new Education();
+            education.setEducationYear(educationDTO.getEducationYear());
+            education.setDescription(educationDTO.getDescription());
+            educationEntities.add(education);
+        }
+        portfolio.setEducationList(educationEntities);
+
+        List<Service> serviceEntities=new ArrayList<>();
+        for(ServiceDTO serviceDTO:services){
+            Service service=new Service();
+            service.setTitle(serviceDTO.getTitle());
+            service.setDescription(serviceDTO.getDescription());
+            serviceEntities.add(service);
+        }
+        portfolio.setServiceList(serviceEntities);
+        // Ajouter les objets Work avec leurs images
+        List<Work> workEntities = new ArrayList<>();
+        int imageIndex = 0;
+        for (WorkDTO workDTO : works) {
+            Work work = new Work();
+            work.setTitle(workDTO.getTitle());
+            work.setDescription(workDTO.getDescription());
+            work.setLink(workDTO.getLink());
+
+            // Associer l'image du travail
+            if (imageIndex < workImages.size()) {
+                MultipartFile workImage = workImages.get(imageIndex);
+                work.setImage(workImage.getBytes()); // Assurez-vous que l'image est en format byte[]
+            }
+            workEntities.add(work);
+            imageIndex++;
+        }
+        portfolio.setWorkList(workEntities);
+
+        return portfolio;
+    }
+
+
+    private String loadFileContent(String filePath) throws IOException {
+        Resource resource = resourceLoader.getResource("classpath:" + filePath);
+        InputStream inputStream = resource.getInputStream();
+        byte[] bytes = inputStream.readAllBytes();
+        return new String(bytes);
+    }
+    // Méthode pour ajouter un fichier au fichier ZIP
+    private void addToZipFile(File file, String fileName, ZipOutputStream zipOut) throws IOException {
+        zipOut.putNextEntry(new ZipEntry(fileName));
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        zipOut.write(bytes, 0, bytes.length);
+        zipOut.closeEntry();
+    }
+
+    private String getDarkenedColor(String hexColor) {
+        // Vérifie si le code couleur est valide
+        if (hexColor == null || hexColor.length() != 7 || !hexColor.startsWith("#")) {
+            return hexColor; // Retourne la couleur d'origine si elle n'est pas valide
+        }
+
+        // Convertit la couleur hexadécimale en RGB
+        int r = Integer.parseInt(hexColor.substring(1, 3), 16);
+        int g = Integer.parseInt(hexColor.substring(3, 5), 16);
+        int b = Integer.parseInt(hexColor.substring(5, 7), 16);
+
+        // Augmente la luminosité (ici diminué de 33%)
+        r = Math.max(0, (int) (r * 0.67));
+        g = Math.max(0, (int) (g * 0.67));
+        b = Math.max(0, (int) (b * 0.67));
+
+        // Convertit RGB en couleur hexadécimale
+        return String.format("#%02x%02x%02x", r, g, b);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handlerException(Exception e){
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
+
+
+

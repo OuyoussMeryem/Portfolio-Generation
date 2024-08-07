@@ -8,14 +8,14 @@ html{
     scroll-behavior: smooth;
 }
 body{
-    background: #080808;
-    color: #fff;
+    background: #{backgroundColor};
+    color: #{textColor};
 }
 
 .brand {
     font-size: 40px;
     font-weight: bold;
-    color: #fff;
+    color: #{textColor};
     text-transform: uppercase;
     letter-spacing: 2px;
     padding: 10px;
@@ -23,7 +23,7 @@ body{
 }
 
 .brand::first-letter {
-    color: #ff004f;
+    color: #{decorationColor};
     font-size: 40px;
 }
 
@@ -96,7 +96,7 @@ nav ul li{
 }
 
 nav ul li a{
-    color:#fff ;
+    color:#{textColor} ;
     text-decoration: none;
     font-size: 18px;
     position: relative;
@@ -106,7 +106,7 @@ nav ul li a::after{
     content: '';
     width: 0;
     height: 3px;
-    background: #ff004f;
+    background: #{decorationColor};
     position:absolute;
     left: 0;
     bottom: -6px;
@@ -128,7 +128,7 @@ nav ul li a:hover::after{
 }
 
 .header-text h1 span{
-    color: #ff004f;
+    color: #{decorationColor};
 }
 
 
@@ -160,7 +160,7 @@ nav ul li a:hover::after{
 .sub-title{
     font-size: 60px;
     font-weight: 600;
-    color: #fff;
+    color: #{textColor};
 }
 
 .tab-titles{
@@ -180,7 +180,7 @@ nav ul li a:hover::after{
     content: '';
     width: 0;
     height: 3px;
-    background: #ff004f;
+    background: #{decorationColor};
     position: absolute;
     left: 0;
     bottom: -8px;
@@ -197,7 +197,7 @@ nav ul li a:hover::after{
 }
 
 .tab-contents ul li span{
-    color: #b54769;
+    color: #{secondDecorationColor};
     font-size: 14px;
 }
 
@@ -244,14 +244,14 @@ nav ul li a:hover::after{
 
 .services-list div a{
     text-decoration: none;
-    color: #fff;
+    color: #{textColor};
     font-size: 12px;
     margin-top: 20px;
     display: inline-block;
 }
 
 .services-list div:hover{
-    background: #ff004f;
+    background: #{decorationColor};
     transform: translateY(-10px);
 }
 
@@ -284,7 +284,7 @@ nav ul li a:hover::after{
 .layer{
     width: 100%;
     height: 0;
-    background: linear-gradient(rgba(0,0,0,0.6),#ff004f);
+    background: linear-gradient(rgba(0,0,0,0.6),#{decorationColor});
     border-radius: 10px;
     position: absolute;
     left: 0;
@@ -307,11 +307,11 @@ nav ul li a:hover::after{
 
 .layer a{
     margin-top: 20px;
-    color:#ff004f;
+    color:#{decorationColor};
     text-decoration: none;
     font-size: 18px;
     line-height: 60px;
-    background: #fff;
+    background: #{decorationColor};
     width: 60px;
     height: 60px;
     border-radius: 50px;
@@ -330,16 +330,16 @@ nav ul li a:hover::after{
     display: block;
     margin: 50px auto;
     width: fit-content;
-    border: 1px solid #ff004f;
+    border: 1px solid #{decorationColor};
     padding: 14px 50px;
     border-radius: 6px;
     text-decoration: none;
-    color:#fff;
+    color:#{textColor};
     transition: background 0.5s;
 }
 
 .btn:hover{
-    background: #ff004f;
+    background: #{decorationColor};
 }
 
 
@@ -357,7 +357,7 @@ nav ul li a:hover::after{
 }
 
 .contact-left p i{
-    color: #ff004f;
+    color: #{decorationColor};
     margin-right: 15px;
     font-size: 25px;
 }
@@ -376,13 +376,13 @@ nav ul li a:hover::after{
 }
 
 .social-icons a:hover{
-    color: #ff004f;
+    color: #{decorationColor};
     transform: translateY(-5px);
 }
 
 .btn.btn2{
     display: inline-block;
-    background: #ff004f;
+    background: #{decorationColor};
 }
 
 .contact-right form{
@@ -396,7 +396,7 @@ form input,form textarea{
     background: #262626;
     padding: 15px;
     margin: 15px 0;
-    color: #fff;
+    color: #{textColor};
     font-size: 18px;
     border-radius: 6px;
 }
@@ -416,7 +416,7 @@ form .btn2{
 }
 
 .copyright i{
-    color:#ff004f;
+    color:#{decorationColor};
 }
 
 
@@ -442,7 +442,7 @@ nav .fas{
         font-size: 25px;
     }
     nav ul{
-        background: #ff004f;
+        background: #{decorationColor};
         position: fixed;
         top: 0;
         right: -200px;

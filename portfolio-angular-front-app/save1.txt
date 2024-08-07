@@ -1,0 +1,189 @@
+<div class="container">
+    <h1 class="form-title">Home page </h1>
+    <form [formGroup]="portfolioForm" (ngSubmit)="onSubmit()">
+      <div class="main-user-info">
+
+        <div class="user-input-box">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" formControlName="firstName" required/>
+          <small class="text-danger" *ngIf="portfolioForm.get('firstName')?.invalid && portfolioForm.get('firstName')?.touched">
+            *First Name is required.*
+          </small>
+        </div>
+
+        <div class="user-input-box">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" formControlName="lastName" required/>
+          <small class="text-danger" *ngIf="portfolioForm.get('lastName')?.invalid && portfolioForm.get('lastName')?.touched">
+            *Last Name is required.*
+          </small>
+        </div>
+
+
+        <div class="user-input-box">
+          <label for="photoWithoutBackground">Photo Without Background:</label>
+          <input type="file" id="photoWithoutBackground" (change)="onFileChange($event, 'photoWithoutBackground')" required>
+          <small class="text-danger" *ngIf="portfolioForm.get('photoWithoutBackground')?.invalid && portfolioForm.get('photoWithoutBackground')?.touched">
+            Photo Without Background is required.
+          </small>
+        </div>
+
+        <div class="user-input-box">
+          <label for="photo">Photo :</label>
+          <input type="file" id="photo" (change)="onFileChange($event, 'photo')" required>
+          <small class="text-danger" *ngIf="portfolioForm.get('photo')?.invalid && portfolioForm.get('photo')?.touched">
+            Photo is required.
+          </small>
+        </div>
+
+      </div>
+      <div class="form-submit-btn">
+        <input type="submit" value="Generate Portfolio">
+      </div>
+    </form>
+
+################################################""
+import {Component, OnInit} from '@angular/core';
+import {PortfolioService} from "../services/portfolio.service";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+
+@Component({
+  selector: 'app-portfolio-form',
+  templateUrl: './portfolio-form.component.html',
+  styleUrl: './portfolio-form.component.css'
+})
+export class PortfolioFormComponent implements OnInit{
+
+  public portfolioForm!: FormGroup;
+  photoWithoutBackground!: File;
+  photo!: File;
+
+  constructor(private portfolioService:PortfolioService,private fb:FormBuilder) {
+  }
+
+  ngOnInit(): void {
+    this.portfolioForm = this.fb.group({
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      photoWithoutBackground: [null, Validators.required],
+      photo: [null, Validators.required]
+    });
+  }
+  onFileChange(event: any, fileType: string) {
+    const file = event.target.files[0];
+    if (fileType === 'photoWithoutBackground') {
+      this.photoWithoutBackground = file;
+      this.portfolioForm.patchValue({ photoWithoutBackground: file });
+    } else if (fileType === 'photo') {
+      this.photo = file;
+      this.portfolioForm.patchValue({ photo: file });
+    }
+  }
+
+  onSubmit() {
+    if (this.portfolioForm.invalid) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('firstName', this.portfolioForm.get('firstName')?.value);
+    formData.append('lastName', this.portfolioForm.get('lastName')?.value);
+    formData.append('photoWithoutBackground', this.photoWithoutBackground);
+    formData.append('photo', this.photo);
+
+    this.portfolioService.generatePortfolio(formData).subscribe(response => {
+      const url = window.URL.createObjectURL(response);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'portfolio.zip';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }, error => {
+      console.error('Error:', error);
+    });
+  }
+
+}
+#################################################################################################
+import { Component } from '@angular/core';
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {FormBuilder} from "@angular/forms";
+import {PortfolioService} from "../services/portfolio.service";
+
+@Component({
+  selector: 'app-portfolio-test',
+  templateUrl: './portfolio-test.component.html',
+  styleUrl: './portfolio-test.component.css'
+})
+export class PortfolioTestComponent {
+
+  constructor(private http: HttpClient, private fb: FormBuilder,private portfolioService:PortfolioService ) {
+  }
+
+
+  onSubmit() {
+    console.log("Form submitted");
+    const formData = new FormData();
+    formData.append('brand', 'BrandName');
+    formData.append('firstName', 'John');
+    formData.append('lastName', 'Doe');
+    formData.append('country', 'USA');
+    formData.append('domain', 'IT');
+    formData.append('email', 'john.doe@example.com');
+    formData.append('telephone', '123456789');
+    formData.append('facebookLien', 'http://facebook.com/johndoe');
+    formData.append('twiterLien', 'http://twitter.com/johndoe');
+    formData.append('linkdnLien', 'http://linkedin.com/in/johndoe');
+    formData.append('instagramLien', 'http://instagram.com/johndoe');
+    formData.append('descriptionGlobal', 'This is a global description.');
+    formData.append('backgroundColor', '#ffffff');
+    formData.append('textColor', '#000000');
+    formData.append('decorationColor', '#ef0648');
+    formData.append('photoWithoutBackground', new Blob([''], { type: 'image/png' }), 'photoWithoutBackground.png');
+    formData.append('photo', new Blob([''], { type: 'image/jpeg' }), 'photo.jpg');
+    formData.append('cvPdf', new Blob([''], { type: 'application/pdf' }), 'cv.pdf');
+
+    const portfolioRequest = {
+      skills: [
+        { title: 'Java Development', description: 'Proficient in Java programming language, including frameworks like Spring and Hibernate.' },
+        { title: 'Web Design', description: 'Experienced in HTML, CSS, and JavaScript. Skilled in responsive and accessible web design.' },
+        { title: 'Database Management', description: 'Knowledgeable in SQL and NoSQL databases. Experience with database design and optimization.' }
+      ],
+      experiences: [
+        { dateDebut: 'June 2021', dateFin: 'Present', description: 'Software Developer at ABC Company. Working on developing and maintaining web applications.' },
+        { dateDebut: 'January 2020', dateFin: 'May 2021', description: 'Intern at XYZ Inc. Assisted in developing user interfaces and backend services.' },
+        { dateDebut: 'June 2019', dateFin: 'December 2019', description: 'Freelance Web Designer. Designed and implemented websites for various clients.' }
+      ],
+      educations: [
+        { educationYear: '2020 - 2024', description: "Bachelor's degree in Computer Science from XYZ University" },
+        { educationYear: '2018 - 2020', description: "Associate's degree in Web Development from ABC College" },
+        { educationYear: '2015 - 2018', description: 'High School Diploma from DEF High School' }
+      ],
+      services: [
+        { title: 'Web Design', description: "Creating visually appealing and user-friendly websites tailored to your brand's identity. From responsive layouts to engaging interfaces, I ensure your website stands out." },
+        { title: 'UI/UX Design', description: 'Designing intuitive and seamless user experiences that enhance user satisfaction. I focus on creating designs that are both functional and aesthetically pleasing.' },
+        { title: 'App Design', description: 'Developing engaging and interactive app interfaces that deliver a great user experience. Whether it\'s a mobile app or a web application, I create designs that meet user needs.' }
+      ],
+      works: [
+        { title: 'Project A', description: 'Description of Project A', link: 'http://example.com/projectA', image: null },
+        { title: 'Project B', description: 'Description of Project B', link: 'https://github.com/OuyoussMeryem?tab=repositories', image: null },
+        { title: 'Project C', description: 'Description of Project A', link: 'https://github.com/OuyoussMeryem?tab=repositories', image: null }
+      ]
+    };
+
+    formData.append('portfolioRequest', JSON.stringify(portfolioRequest));
+
+    // Static images for workImages
+    formData.append('workImages', new Blob([''], { type: 'image/jpeg' }), 'workImage1.jpg');
+    formData.append('workImages', new Blob([''], { type: 'image/jpeg' }), 'workImage2.jpg');
+    formData.append('workImages', new Blob([''], { type: 'image/jpeg' }), 'workImage3.jpg');
+    this.portfolioService.generatePortfolio(formData).subscribe(response => {
+      const url = window.URL.createObjectURL(response);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'portfolio.zip';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
+  }
+}
