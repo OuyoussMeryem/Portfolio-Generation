@@ -1,0 +1,70 @@
+.book{
+  background: #f9f9f9;
+  padding: 50px;
+}
+.main-text h1{
+  text-align: center;
+  text-shadow: 0px 1px 1px black;
+  font-weight: 600;
+}
+.main-text h1 span{
+  color: #4CAF50;
+}
+.book .card{
+  border-radius: 10px;
+  box-shadow: 0px 5px 5px -6px black;
+}
+.book .row{
+  margin-top: 30px;
+}
+.book form input{
+  padding: 10px;
+  color: black;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  border-radius: 10px;
+  box-shadow: 0px 5px 5px -6px black;
+}
+.book form textarea{
+  border: none;
+  border-radius: 10px;
+  resize: none;
+  box-shadow: 0px 5px 5px -6px black;
+  height: 200px;
+}
+.book .submit{
+  width: 160px;
+  font-size: 16px;
+  font-weight: 550;
+  background: #4CAF50;
+  color: white;
+  margin-top: 10px;
+  transition: 0.5s;
+}
+.book .submit:hover{
+  width: 170px;
+}
+@media (max-width:765px){
+  .book{
+    padding: 0;
+  }
+  .main-text h1{
+    padding: 20px;
+  }
+}
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.button-container .btn {
+  margin: 10px;
+}
+/* Section Book End */
+
+.hidden {
+  display: none;
+}

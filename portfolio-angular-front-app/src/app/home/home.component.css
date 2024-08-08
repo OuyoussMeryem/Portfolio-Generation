@@ -2,7 +2,7 @@
 .home{
   width: 100%;
   height: 90vh;
-  background-color: rgba(197, 141, 41, 0.69);
+  background-color: #033E05;
   background-repeat: no-repeat;
   background-size: cover;
 }
@@ -25,7 +25,7 @@
 }
 .changecontent::after{
   content: ' ';
-  color: #ffa500;
+  color: #4CAF50;
   text-shadow: 0px 1px 1px black;
   animation: changetext 10s infinite linear;
 }
@@ -56,7 +56,7 @@
   transition: 0.5s;
 }
 .home .content a:hover{
-  background: #ffa500;
+  background: #4CAF50;
   color: white;
 }
 @media (max-width:850px){
@@ -77,17 +77,26 @@
 }
 /* Home Section End */
 /* Section Gallary Start */
-.gallary{
+.gallary {
   margin-top: 50px;
 }
+
+
 .gallary .card{
   border-radius: 10px;
   box-shadow: rgba(0,0,0,0.1) 0px 4px 12px;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 .gallary .card img{
   border-radius: 10px;
   transition: 0.5s;
+  border: 2px solid #4CAF50;
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
 }
 .gallary .card img:hover{
   transform: scale(1.1);
@@ -121,7 +130,7 @@
   height: 38px;
   border: none;
   border-radius: 5px;
-  background: #ffa500;
+  background: #4CAF50;
   color: white;
   letter-spacing: 2px;
   font-weight: 550;
@@ -144,6 +153,22 @@
   text-shadow: 0px 1px 1px black;
 }
 .main-txt h1 span{
-  color: #ffa500;
+  color: #4CAF50;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  overflow: hidden;
+}
+
+.logo-image {
+  border: 2px solid #4CAF50;
+  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 /* About End */

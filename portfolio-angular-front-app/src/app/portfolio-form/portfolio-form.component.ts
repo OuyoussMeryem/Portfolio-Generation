@@ -177,4 +177,39 @@ export class PortfolioFormComponent implements OnInit {
       window.URL.revokeObjectURL(url);
     });
   }
+
+  removeSkill(index: number): void {
+    const skills = this.skills;
+    if (skills.length > 1) {
+      skills.removeAt(index);
+    }
+  }
+
+  removeExperience(index: number) {
+    const experiences = this.experiences;
+    if (experiences.length > 1) {
+      experiences.removeAt(index);
+    }
+  }
+
+  removeEducations(index: number) {
+    const educations = this.educations;
+    if (educations.length > 1) {
+      educations.removeAt(index);
+    }
+  }
+
+  removeServices(index: number) {
+    const services = this.services;
+    if (services.length > 1) {
+      services.removeAt(index);
+    }
+  }
+
+  removeWorks(index: number) {
+    const works = this.works;
+    if (works.length > 1) {
+      works.removeAt(index);
+    }
+  }
 }

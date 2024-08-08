@@ -7,17 +7,15 @@ import {HttpClientModule} from "@angular/common/http";
 import { PortfolioFormComponent } from './portfolio-form/portfolio-form.component';
 import {ReactiveFormsModule} from "@angular/forms";
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { PortfolioTestComponent } from './portfolio-test/portfolio-test.component';
 import { HomeComponent } from './home/home.component';
-import { AboutComponent } from './about/about.component';
+import { ProfileComponent } from './profile/profile.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     PortfolioFormComponent,
-    PortfolioTestComponent,
     HomeComponent,
-    AboutComponent
+    ProfileComponent
   ],
   imports: [
     BrowserModule,
