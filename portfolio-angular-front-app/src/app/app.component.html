@@ -13,16 +13,24 @@
         <li class="nav-item">
           <a class="nav-link" routerLink="/portfolioForm">Generate Yours</a>
         </li>
-
-
+        <li class="nav-item" *ngIf="keycloakService.getUserRoles().includes('ADMIN')">
+          <a class="nav-link" routerLink="/portfolios">Portfolios</a>
+        </li>
       </ul>
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="#">Login</a>
+        <li class="nav-item" *ngIf="!profile">
+          <a class="nav-link" href="#"  (click)="login()">Login</a>
+        </li>
+        <li class="nav-item" *ngIf="profile">
+          <a class="nav-link" href="#" (click)="logout()">Logout</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/profile">Profil</a>
+          <a class="nav-link text-danger" *ngIf="profile ;else NOT_LOGGED_IN" routerLink="/profile">{{profile.username}}</a>
+          <ng-template #NOT_LOGGED_IN >
+            <span  class="nav-link text-danger">Not logged !</span>
+          </ng-template>
         </li>
+
       </ul>
     </div>
   </div>
@@ -36,7 +44,7 @@
 <footer id="footer">
   <div class="container">
     <h1><span>P</span>ortfolio</h1>
-    <p>Créez votre propre portfolio professionnel en quelques clics.</p>
+    <p>Create your own professional portfolio in just a few clicks.</p>
     <div class="social-links my-3">
       <a href="#" class="text-white mx-2"><i class="bi bi-facebook"></i></a>
       <a href="#" class="text-white mx-2"><i class="bi bi-instagram"></i></a>
@@ -48,10 +56,11 @@
       <p>Designed by <a href="https://github.com/OuyoussMeryem?tab=repositories" class="text-success text-decoration-none">Ouyouss Meryem</a></p>
     </div>
     <div class="copyright">
-      <p>&copy; 2024 Ouyouss Meryem. Tous droits réservés.</p>
+      <p>&copy; 2024 Ouyouss Meryem. All rights reserved.</p>
     </div>
   </div>
 </footer>
+
 <!-- Footer End -->
 
 

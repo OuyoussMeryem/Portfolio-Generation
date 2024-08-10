@@ -68,13 +68,14 @@ public class PortfolioService {
     }
 
 
-    public Portfolio createPortfolio(String brand, String firstName, String lastName, String country, String domain,String email,
+    public Portfolio createPortfolio(String keycloakUserId,String brand, String firstName, String lastName, String country, String domain,String email,
                                      String telephone,String facebookLien,
                                      String twiterLien,String linkdnLien,String instagramLien, String descriptionGlobal,
                                      List<SkillDTO> skills, List<ExperienceDTO> experiences, List<EducationDTO> educations,
                                      List<ServiceDTO> services, List<WorkDTO> works, String backgroundColor, String textColor, String decorationColor, List<MultipartFile> workImages) throws IOException {
         Portfolio portfolio = new Portfolio();
         portfolio.setCreatedAt(new Date());
+        portfolio.setKeycloakUserId(keycloakUserId);
         portfolio.setBrand(brand);
         portfolio.setBackgroundColor(backgroundColor);
         portfolio.setTextColor(textColor);
@@ -163,6 +164,25 @@ public class PortfolioService {
         return String.format("#%02x%02x%02x", r, g, b);
     }
 
+    public List<Portfolio> findAllByKeycloakUserId(String id){
+        return  portfolioRepository.findByKeycloakUserId(id);
+    }
+
+    public List<Portfolio> getAllPortfolio(){
+        return portfolioRepository.findAll();
+    }
+
+    public Portfolio getPortfolioById(Long id){
+        return portfolioRepository.findById(id).get();
+    }
+
+    public List<Object[]> getPortfoliosCountByUser() {
+        return portfolioRepository.countPortfoliosByUser();
+    }
+
+    public Long getTotalPortfolios() {
+        return portfolioRepository.countTotalPortfolios();
+    }
 
 
 }

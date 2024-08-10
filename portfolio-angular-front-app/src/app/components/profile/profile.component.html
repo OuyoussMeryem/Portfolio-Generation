@@ -1,0 +1,35 @@
+<div class="container mt-5">
+  <div class="row">
+    <!-- User Information -->
+    <div class="col-md-4">
+      <div class="card user-info">
+        <div class="card-body text-center">
+          <h4 class="card-title">{{profile?.username}}</h4>
+          <p class="card-text"><strong>Email:</strong> {{profile?.email}}</p>
+          <p class="card-text"><strong>Prénom:</strong> {{profile?.firstName}}</p>
+          <p class="card-text"><strong>Nom:</strong> {{profile?.lastName}}</p>
+        </div>
+      </div>
+    </div>
+    <!-- Portfolio List -->
+    <div class="col-md-8">
+      <div class="card portfolio-list">
+        <div class="card-header">
+          <h5 class="card-title">Mes Portfolios</h5>
+        </div>
+        <div class="card-body">
+          <ul class="list-group">
+            <li *ngFor="let portfolio of portfolios" class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <h6>{{ portfolio.brand }}</h6>
+                <p class="mb-0"><strong>Créé le:</strong> {{ portfolio.createdAt | date:'dd/MM/yyyy' }}</p>
+                <p class="mb-0"><strong>Description:</strong> {{ portfolio.descriptionGlobal }}</p>
+              </div>
+              <button class="btn btn-primary" (click)="portfolioDetails(portfolio)">Voir</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

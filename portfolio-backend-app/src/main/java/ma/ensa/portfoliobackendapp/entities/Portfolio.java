@@ -41,4 +41,6 @@ public class Portfolio {
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Work> workList;
+
+    private String keycloakUserId;
 }

@@ -30,12 +30,12 @@
   animation: changetext 10s infinite linear;
 }
 @keyframes changetext{
-  0% { content: "Votre Portfolio"; }
-  20% { content: "Vos Projets"; }
-  40% { content: "Vos Compétences"; }
-  60% { content: "Vos Expériences"; }
-  80% { content: "Vos Formations"; }
-  100% { content: "Vos Infos de Contact"; }
+  0% { content: "Your Portfolio"; }
+  20% { content: "Your Projects"; }
+  40% { content: "Your Skills"; }
+  60% { content: "Your Experiences"; }
+  80% { content: "Your Education"; }
+  100% { content: "Your Contact Info"; }
 }
 .home .content p{
   color: white;

@@ -1,0 +1,52 @@
+<div class="container mt-5">
+  <div class="row">
+    <!-- Portfolio Details -->
+    <div class="col-md-12">
+      <div class="card portfolio-details">
+        <div class="card-body">
+          <h4 class="card-title">{{ portfolio?.brand }}</h4>
+          <p class="card-text"><strong>Full Name:</strong> {{ portfolio?.user?.lastName}} {{ portfolio?.user?.firstName}}</p>
+          <p class="card-text"><strong>Domain:</strong> {{ portfolio?.user?.domain }}</p>
+          <p class="card-text"><strong>Email:</strong> {{ portfolio?.user?.email}}</p>
+          <p class="card-text"><strong>Phone:</strong> {{ portfolio?.user?.telephone}}</p>
+          <p class="card-text"><strong>Description:</strong> {{ portfolio?.descriptionGlobal }}</p>
+          <p class="card-text"><strong>Created On:</strong> {{ portfolio?.createdAt | date:'MM/dd/yyyy' }}</p>
+          <p class="card-text"><strong>Background Color:</strong> <span [ngStyle]="{'background-color': portfolio?.backgroundColor}" class="color-box"></span> {{ portfolio?.backgroundColor }}</p>
+          <p class="card-text"><strong>Text Color:</strong> <span [ngStyle]="{'background-color': portfolio?.textColor}" class="color-box"></span> {{ portfolio?.textColor }}</p>
+          <p class="card-text"><strong>Decoration Color:</strong> <span [ngStyle]="{'background-color': portfolio?.decorationColor}" class="color-box"></span> {{ portfolio?.decorationColor }}</p>
+          <h5 class="mt-4">Skills</h5>
+          <ul class="list-group">
+            <li *ngFor="let skill of portfolio?.skillList" class="list-group-item">
+              <strong>{{ skill.title }}</strong>: {{ skill.description }}
+            </li>
+          </ul>
+          <h5 class="mt-4">Experiences</h5>
+          <ul class="list-group">
+            <li *ngFor="let experience of portfolio?.experienceList" class="list-group-item">
+              <strong>{{ experience.dateDebut }} - {{ experience.dateFin }}</strong>: {{ experience.description }}
+            </li>
+          </ul>
+          <h5 class="mt-4">Education</h5>
+          <ul class="list-group">
+            <li *ngFor="let education of portfolio?.educationList" class="list-group-item">
+              <strong>{{ education.educationYear }}</strong>: {{ education.description }}
+            </li>
+          </ul>
+          <h5 class="mt-4">Services</h5>
+          <ul class="list-group">
+            <li *ngFor="let service of portfolio?.serviceList" class="list-group-item">
+              <strong>{{ service.title }}</strong>: {{ service.description }}
+            </li>
+          </ul>
+          <h5 class="mt-4">Works</h5>
+          <ul class="list-group">
+            <li *ngFor="let work of portfolio?.workList" class="list-group-item">
+              <strong>{{ work.title }}</strong>: {{ work.description }}
+              <br/><strong>Work Link:</strong> <a href="{{ work.link }}">{{ work.link }}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

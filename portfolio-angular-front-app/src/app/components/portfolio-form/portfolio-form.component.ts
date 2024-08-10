@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { PortfolioService } from '../services/portfolio.service';
+import { PortfolioService } from '../../services/portfolio.service';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AuthServiceService} from "../../services/auth-service.service";
 
 @Component({
   selector: 'app-portfolio-form',
@@ -10,8 +11,9 @@ import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angul
 export class PortfolioFormComponent implements OnInit {
 
   portfolioForm!: FormGroup;
+  keycloakUserId!:string | undefined | null;
 
-  constructor(private fb: FormBuilder, private portfolioService: PortfolioService) {}
+  constructor(private fb: FormBuilder, private portfolioService: PortfolioService,private authServiceService:AuthServiceService) {}
 
 
   ngOnInit() {
@@ -130,8 +132,10 @@ export class PortfolioFormComponent implements OnInit {
   onSubmit() {
     console.log("je suis la ");
 
-
+    this.keycloakUserId=this.authServiceService.getUserId();
+    console.log(this.keycloakUserId);
     const formData = new FormData();
+    formData.append('keycloakUserId', this.keycloakUserId || '');
     formData.append('brand', this.portfolioForm.get('brand')?.value);
     formData.append('firstName', this.portfolioForm.get('firstName')?.value);
     formData.append('lastName', this.portfolioForm.get('lastName')?.value);
@@ -175,6 +179,8 @@ export class PortfolioFormComponent implements OnInit {
       a.download = 'portfolio.zip';
       a.click();
       window.URL.revokeObjectURL(url);
+
+      this.portfolioForm.reset();
     });
   }
 

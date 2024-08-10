@@ -7,7 +7,6 @@ import ma.ensa.portfoliobackendapp.entities.*;
 import ma.ensa.portfoliobackendapp.requests.PortfolioRequest;
 import ma.ensa.portfoliobackendapp.services.PortfolioService;
 import org.apache.commons.io.FileUtils;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,21 +23,17 @@ import java.util.zip.ZipOutputStream;
 
 @RestController
 @RequestMapping("/api/generate")
-@CrossOrigin("*")
 public class GeneratePortfolioController {
-
-
-    private ResourceLoader resourceLoader;
 
     private PortfolioService portfolioService;
 
-    public GeneratePortfolioController(ResourceLoader resourceLoader, PortfolioService portfolioService) {
-        this.resourceLoader = resourceLoader;
+    public GeneratePortfolioController(PortfolioService portfolioService) {
         this.portfolioService = portfolioService;
     }
 
     @PostMapping(value = "/portfolio", consumes = "multipart/form-data")
     public ResponseEntity<byte[]> generatePortfolioSeparer(
+            @RequestParam("keycloakUserId") String keycloakUserId,
             @RequestParam("brand") String brand,
             @RequestParam("firstName") String firstName,
             @RequestParam("lastName") String lastName,
@@ -64,7 +59,7 @@ public class GeneratePortfolioController {
         PortfolioRequest portfolioRequest = objectMapper.readValue(portfolioRequestJson, PortfolioRequest.class);
 
 
-        Portfolio portfolio =portfolioService.createPortfolio(brand, firstName, lastName, country, domain,email
+        Portfolio portfolio =portfolioService.createPortfolio(keycloakUserId,brand, firstName, lastName, country, domain,email
                 ,telephone,facebookLien,twiterLien,linkdnLien,instagramLien, descriptionGlobal,
                 portfolioRequest.getSkills(), portfolioRequest.getExperiences(),
                 portfolioRequest.getEducations(),portfolioRequest.getServices(),
@@ -119,7 +114,7 @@ public class GeneratePortfolioController {
                     .append("<div class=\"layer\">")
                     .append("<h3>").append(workDTO.getTitle()).append("</h3>")
                     .append("<p>").append(workDTO.getDescription()).append("</p>")
-                    .append("<a href=\"").append(workDTO.getLink()).append("\"><i class=\"fa-solid fa-up-right-from-square\"></i></a>")
+                    .append("<a href=\"").append(workDTO.getLink()).append("\"><i class='fa-solid fa-up-right-from-square'></i></a>")
                     .append("</div></div>");
 
             imageIndex++;
@@ -187,6 +182,7 @@ public class GeneratePortfolioController {
 
         return new ResponseEntity<>(zipBytes, headers, HttpStatus.OK);
     }
+
 
 
     @ExceptionHandler(Exception.class)
