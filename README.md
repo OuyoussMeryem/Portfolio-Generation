@@ -1,4 +1,5 @@
-Les vidéos de démonstration
+***Les vidéos de démonstration***
+*********
 **1-Création d'un utilisateur via Keycloak avec des rôles d'administrateur et d'utilisateur**
 Dans cette démo, je montre comment créer un utilisateur directement depuis l'interface de Keycloak, en lui attribuant les rôles d'administrateur (ADMIN) et d'utilisateur (USER).
 
@@ -25,6 +26,10 @@ https://github.com/user-attachments/assets/44c3bf99-51a6-4642-9c92-4fefa79fc67d
 
 **4-Connexion en tant qu'utilisateur, génération de portfolio et consultation des portfolios générés**
 Ici, je montre comment un utilisateur se connecte avec le rôle USER, génère un portfolio, puis consulte la liste des portfolios qu'il a créés, incluant les données d'inscription récupérées depuis Keycloak.
+
+
+https://github.com/user-attachments/assets/8457072d-c5fe-4171-87e8-55a626a65e84
+
 
 
 **5-Authentification en tant qu'administrateur et visualisation des portfolios générés par les utilisateurs**
