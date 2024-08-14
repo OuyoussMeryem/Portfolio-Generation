@@ -35,3 +35,7 @@ https://github.com/user-attachments/assets/8457072d-c5fe-4171-87e8-55a626a65e84
 **5-Authentification en tant qu'administrateur et visualisation des portfolios générés par les utilisateurs**
 Dans cette démo, un administrateur (ADMIN) se connecte pour accéder à une fonctionnalité supplémentaire : la visualisation du nombre total de portfolios générés dans l'application, ainsi que le nombre de portfolios générés par chaque utilisateur.
 
+
+https://github.com/user-attachments/assets/b0cea3b8-15f1-4cc4-bfad-67a18653e1e3
+
+
