@@ -1,31 +1,12 @@
+Les vidéos de démonstration
+**1-Création d'un utilisateur via Keycloak avec des rôles d'administrateur et d'utilisateur**
+Dans cette démo, je montre comment créer un utilisateur directement depuis l'interface de Keycloak, en lui attribuant les rôles d'administrateur (ADMIN) et d'utilisateur (USER).
+**2-Création d'un utilisateur via l'application Angular avec le rôle utilisateur par défaut**
+Cette démo illustre la création d'un utilisateur via mon application Angular. L'utilisateur obtient automatiquement le rôle d'utilisateur (USER) par défaut. Je montre également les contraintes à respecter lors de l'inscription.
+**3-Utilisation de Docker Compose avec PostgreSQL pour Keycloak et MySQL pour les données de l'application**
+Dans cette démo, je montre comment les données de Keycloak sont stockées dans une base de données PostgreSQL, tandis que les autres entités JPA de l'application utilisent une base de données MySQL, le tout orchestré via Docker Compose.
+**4-Connexion en tant qu'utilisateur, génération de portfolio et consultation des portfolios générés**
+Ici, je montre comment un utilisateur se connecte avec le rôle USER, génère un portfolio, puis consulte la liste des portfolios qu'il a créés, incluant les données d'inscription récupérées depuis Keycloak.
+**5-Authentification en tant qu'administrateur et visualisation des portfolios générés par les utilisateurs**
+Dans cette démo, un administrateur (ADMIN) se connecte pour accéder à une fonctionnalité supplémentaire : la visualisation du nombre total de portfolios générés dans l'application, ainsi que le nombre de portfolios générés par chaque utilisateur.
 
-![img1](https://github.com/user-attachments/assets/d694cb26-f092-40e5-8e34-e3afbd79e8c9)
-**********
-![img2](https://github.com/user-attachments/assets/a043a117-9ef8-4122-9518-88d50474eb30)
-***********
-![img3](https://github.com/user-attachments/assets/10d51d77-0658-4a4b-aaea-7329b43a8ff0)
-***************
-![imag4](https://github.com/user-attachments/assets/d3dc308a-ada3-4218-98a4-a619aaded03a)
-
-************
-![img5](https://github.com/user-attachments/assets/7fc9d3f3-b4d0-4a2a-b784-84da1dfebf32)
-************
-![img6](https://github.com/user-attachments/assets/8c39656e-1dcc-42e5-b319-eabf355cf259)
-************
-![img7](https://github.com/user-attachments/assets/c3a53f3d-32b1-4378-9a87-abde0dc76e1a)
-************
-![img8](https://github.com/user-attachments/assets/9f6deb76-f231-4eb4-ac78-92ff566deece)
-************
-![img9](https://github.com/user-attachments/assets/02d1e34d-6365-4edb-a439-ce313a97b831)
-************
-![img10](https://github.com/user-attachments/assets/d8159a64-0772-4317-966d-c2633f307a24)
-************
-![img11](https://github.com/user-attachments/assets/9e0ff817-ca6f-4b15-852b-bbdd08eb6bb0)
-************
-![img11](https://github.com/user-attachments/assets/9e0ff817-ca6f-4b15-852b-bbdd08eb6bb0)
-************
-![img12](https://github.com/user-attachments/assets/8d1bfddb-c834-450e-812f-411614990a25)
-************
-![img13](https://github.com/user-attachments/assets/16a4d347-6362-44a8-8775-a17b47cbb6f5)
-************
-![img14](https://github.com/user-attachments/assets/46a8ae01-e383-465e-8fce-cdb0d73908d6)
