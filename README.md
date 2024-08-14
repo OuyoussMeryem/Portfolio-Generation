@@ -19,6 +19,10 @@ https://github.com/user-attachments/assets/20bcd1b7-351e-4a9e-91d0-6a1f0240d8d9
 Dans cette démo, je montre comment les données de Keycloak sont stockées dans une base de données PostgreSQL, tandis que les autres entités JPA de l'application utilisent une base de données MySQL, le tout orchestré via Docker Compose.
 
 
+https://github.com/user-attachments/assets/44c3bf99-51a6-4642-9c92-4fefa79fc67d
+
+
+
 **4-Connexion en tant qu'utilisateur, génération de portfolio et consultation des portfolios générés**
 Ici, je montre comment un utilisateur se connecte avec le rôle USER, génère un portfolio, puis consulte la liste des portfolios qu'il a créés, incluant les données d'inscription récupérées depuis Keycloak.
 
