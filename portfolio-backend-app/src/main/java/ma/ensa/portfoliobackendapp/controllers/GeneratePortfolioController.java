@@ -2,6 +2,12 @@ package ma.ensa.portfoliobackendapp.controllers;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import ma.ensa.portfoliobackendapp.dtos.*;
 import ma.ensa.portfoliobackendapp.entities.*;
 import ma.ensa.portfoliobackendapp.requests.PortfolioRequest;
@@ -31,28 +37,78 @@ public class GeneratePortfolioController {
         this.portfolioService = portfolioService;
     }
 
+    @Operation(
+            summary = "Générer un portfolio",
+            description = "Crée un portfolio à partir des informations fournies et renvoie le portfolio en format ZIP."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Portfolio généré avec succès", content = @Content(mediaType = "application/zip")),
+            @ApiResponse(responseCode = "400", description = "Requête invalide"),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     @PostMapping(value = "/portfolio", consumes = "multipart/form-data")
     public ResponseEntity<byte[]> generatePortfolioSeparer(
+            @Parameter(description = "Identifiant de l'utilisateur Keycloak", example = "keycloak-12345")
             @RequestParam("keycloakUserId") String keycloakUserId,
+
+            @Parameter(description = "Marque du portfolio", example = "Porftolio")
             @RequestParam("brand") String brand,
+
+            @Parameter(description = "Prénom du propriétaire du portfolio", example = "Meryem")
             @RequestParam("firstName") String firstName,
+
+            @Parameter(description = "Nom du propriétaire du portfolio", example = "Ouyouss")
             @RequestParam("lastName") String lastName,
+
+            @Parameter(description = "Pays du propriétaire du portfolio", example = "Maroc")
             @RequestParam("country") String country,
+
+            @Parameter(description = "Domaine du propriétaire du portfolio", example = "Développement web")
             @RequestParam("domain") String domain,
+
+            @Parameter(description = "Email du propriétaire du portfolio", example = "ouyss.meryem@gmail.com")
             @RequestParam("email") String email,
+
+            @Parameter(description = "Numéro de téléphone du propriétaire du portfolio", example = "0651061415")
             @RequestParam("telephone") String telephone,
+
+            @Parameter(description = "Lien Facebook du propriétaire du portfolio", example = "https://facebook.com/")
             @RequestParam("facebookLien") String facebookLien,
+
+            @Parameter(description = "Lien Twitter du propriétaire du portfolio", example = "https://twitter.com/")
             @RequestParam("twiterLien") String twiterLien,
+
+            @Parameter(description = "Lien LinkedIn du propriétaire du portfolio", example = "https://linkedin.com/")
             @RequestParam("linkdnLien") String linkdnLien,
+
+            @Parameter(description = "Lien Instagram du propriétaire du portfolio", example = "https://instagram.com/")
             @RequestParam("instagramLien") String instagramLien,
+
+            @Parameter(description = "Description globale du portfolio", example = "Portfolio professionnel de Ouyouss Meryem")
             @RequestParam("descriptionGlobal") String descriptionGlobal,
+
+            @Parameter(description = "Couleur de fond du portfolio", example = "#FFFFFF")
             @RequestParam("backgroundColor") String backgroundColor,
+
+            @Parameter(description = "Couleur du texte du portfolio", example = "#000000")
             @RequestParam("textColor") String textColor,
+
+            @Parameter(description = "Couleur de décoration du portfolio", example = "#FF5733")
             @RequestParam("decorationColor") String decorationColor,
+
+            @Parameter(description = "Photo sans arrière-plan du propriétaire du portfolio")
             @RequestPart("photoWithoutBackground") MultipartFile photoWithoutBackground,
+
+            @Parameter(description = "Photo du propriétaire du portfolio")
             @RequestPart("photo") MultipartFile photo,
+
+            @Parameter(description = "CV PDF du propriétaire du portfolio")
             @RequestPart("cvPdf") MultipartFile cvPdf,
+
+            @Parameter(description = "Requête JSON pour créer le portfolio", schema = @Schema(type = "string", format = "json"))
             @RequestParam("portfolioRequest") String portfolioRequestJson,
+
+            @Parameter(description = "Images de travail du portfolio")
             @RequestPart("workImages") List<MultipartFile> workImages) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();

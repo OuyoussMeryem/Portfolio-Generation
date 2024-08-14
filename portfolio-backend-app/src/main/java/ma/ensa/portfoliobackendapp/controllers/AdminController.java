@@ -1,6 +1,7 @@
 package ma.ensa.portfoliobackendapp.controllers;
 
 import ma.ensa.portfoliobackendapp.services.PortfolioService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,6 +19,7 @@ public class AdminController {
     }
 
     @GetMapping("/admin/portfolios-summary")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Map<String, Object> getPortfoliosSummary() {
         Map<String, Object> response = new HashMap<>();
         List<Object[]> portfoliosByUser = portfolioService.getPortfoliosCountByUser();

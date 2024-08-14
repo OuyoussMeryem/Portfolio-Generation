@@ -171,6 +171,13 @@ export class PortfolioFormComponent implements OnInit {
     });
 
     console.log("data",formData);
+    formData.forEach((value, key) => {
+      if (value instanceof File) {
+        console.log(`${key}: ${value.name}`);
+      } else {
+        console.log(`${key}: ${value}`);
+      }
+    });
 
     this.portfolioService.generatePortfolio(formData).subscribe(response => {
       const url = window.URL.createObjectURL(response);

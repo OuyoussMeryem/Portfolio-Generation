@@ -1,0 +1,101 @@
+services:
+  mysql-db-portfolio:
+    image: mariadb:10.6
+    container_name: mysql-db-portfolio
+    restart: always
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: portfolio-db
+      MYSQL_USER: meryemouyouss
+      MYSQL_PASSWORD: meryem1234
+      MYSQL_ROOT_PASSWORD: adminMeryem
+    ports:
+      - 3306:3306
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 5s
+      retries: 10
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 9090:80
+    environment:
+      PMA_HOST: mysql-db-portfolio
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+  postgres-service:
+    image: postgres
+    container_name: postgres-service
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak_db
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: k1234
+    ports:
+      - '5432:5432'
+    expose:
+      - '5432'
+    healthcheck:
+      test: "exit 0"
+  pgadmin4:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ouyss.meryem@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: meryem1234
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+  keycloak-service:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak-service
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-service:5432/keycloak_db
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: k1234
+      KEYCLOAK_ADMIN: admin
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KEYCLOAK_ADMIN_PASSWORD: adminMeryem
+    command:
+      - start-dev
+    restart: always
+    ports:
+      - '8080:8080'
+    expose:
+      - '8080'
+    depends_on:
+      - postgres-service
+  portfolio-backend-app:
+    build: ./portfolio-backend-app
+    container_name: portfolio-backend-app
+    ports:
+      - '8088:8088'
+    expose:
+      - '8088'
+    restart: always
+    depends_on:
+      - mysql-db-portfolio
+      - keycloak-service
+    environment:
+      - DB_URL=jdbc:mysql://mysql-db-portfolio:3306/portfolio-db
+      - JWT_ISSUER_URI=http://localhost:8080/realms/generate-portfolio-realm
+      - JWT_JWK_SET_URI=http://keycloak-service:8080/realms/generate-portfolio-realm/protocol/openid-connect/certs
+
+  portfolio-front-angular:
+    build: ./portfolio-angular-front-app
+    container_name: portfolio-front-angular
+    ports:
+      - '82:80'
+    expose:
+      - '82'
+volumes:
+  mysql_data:
+  postgres_data:
+  pgadmin_data:
